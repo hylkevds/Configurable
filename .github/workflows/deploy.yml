@@ -35,6 +35,7 @@ jobs:
         GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
         GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
       run: |
+        mkdir ~/.gnupg/
         echo 'use-agent' > ~/.gnupg/gpg.conf
         echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
         cat ~/.gnupg/gpg.conf
