@@ -22,12 +22,6 @@ jobs:
         GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
         GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
       run: |
-        mkdir -m 700 ~/.gnupg/
-        echo 'use-agent' > ~/.gnupg/gpg.conf
-        echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
-        echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
-        cat ~/.gnupg/gpg.conf
-        cat ~/.gnupg/gpg-agent.conf
         echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE  --yes --batch --import
         echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE  --yes --batch --import-ownertrust
     - name: Checkout Source
@@ -47,4 +41,6 @@ jobs:
       env:
         GPG_EXECUTABLE: gpg
         GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      run: mvn deploy -P release --settings travis-settings.xml
+        SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+      run: mvn -B deploy -P release --settings travis-settings.xml
