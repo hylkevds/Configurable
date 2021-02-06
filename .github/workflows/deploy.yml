@@ -22,6 +22,10 @@ jobs:
         GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
         GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
       run: |
+        mkdir -m 700 ~/.gnupg/
+        echo 'use-agent' > ~/.gnupg/gpg.conf
+        echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
+        echo 'allow-loopback-pinentry' > ~/.gnupg/gpg-agent.conf
         echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE  --yes --batch --import
         echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE  --yes --batch --import-ownertrust
     - name: Checkout Source
