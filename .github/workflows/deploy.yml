@@ -29,16 +29,18 @@ jobs:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-maven
-    - name: Set up GnuPG step 1
+    - name: Set up GnuPG
       env:
         GPG_EXECUTABLE: gpg
         GPG_SECRET_KEYS: ${{ secrets.GPG_SECRET_KEYS }}
-      run: echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
-    - name: Set up GnuPG step 2
-      env:
-        GPG_EXECUTABLE: gpg
         GPG_OWNERTRUST: ${{ secrets.GPG_OWNERTRUST }}
-      run: echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
+      run: |
+        echo 'use-agent' > ~/.gnupg/gpg.conf
+        echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
+        cat ~/.gnupg/gpg.conf
+        echo RELOADAGENT | gpg-connect-agent
+        echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
+        echo $GPG_OWNERTRUST | base64 --decode | $GPG_EXECUTABLE --import-ownertrust
     - name: Build with Maven
       env:
         GPG_EXECUTABLE: gpg
